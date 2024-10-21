@@ -1,5 +1,6 @@
 import { View, FlatList, StyleSheet, ScrollView, TouchableOpacity, Text } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProductItems from '@/compoents/products/ProductItems';
 
 interface ProductState {
@@ -16,14 +17,39 @@ const products = () => {
   const categories = ['All', 'Fruits', 'Vegetables', 'Dairy', 'Snacks']; // Example categories
 
   useEffect(() => {
-    getProducts();
+    loadProducts();
   }, []);
+
+  const saveProductsToStorage = async (products: ProductState[]) => {
+    try {
+      await AsyncStorage.setItem('products', JSON.stringify(products));
+    } catch (error) {
+      console.error('Failed to save products to storage:', error);
+    }
+  };
+
+  const loadProducts = async () => {
+    try {
+      const savedProducts = await AsyncStorage.getItem('products');
+      if (savedProducts) {
+        setProducts(JSON.parse(savedProducts));
+      } else {
+        getProducts();
+      }
+    } catch (error) {
+      console.error('Failed to load products from storage:', error);
+    }
+  };
 
   const getProducts = () => {
     fetch('https://simple-grocery-store-api.online/products')
       .then((res) => res.json())
       .then((json) => {
         setProducts(json);
+        saveProductsToStorage(json); // Save fetched products to storage
+      })
+      .catch((error) => {
+        console.error('Failed to fetch products:', error);
       });
   };
 
@@ -33,15 +59,10 @@ const products = () => {
   };
 
   const renderProductItem = ({ item, index }: { item: ProductState; index: number }) => {
-    // Determine the size of the card based on index
-    const isFirstCardBigger = index % 2 === 0; // Alternate bigger/smaller card per row
+    const isFirstCardBigger = index % 2 === 0;
     const cardStyle = isFirstCardBigger ? styles.bigCard : styles.smallCard;
 
-    return (
-      
-        <ProductItems item={item} />
-    
-    );
+    return <ProductItems item={item} />;
   };
 
   return (
@@ -53,14 +74,14 @@ const products = () => {
             key={category}
             style={[
               styles.categoryButton,
-              selectedCategory === category && styles.selectedCategoryButton
+              selectedCategory === category && styles.selectedCategoryButton,
             ]}
             onPress={() => setSelectedCategory(category)}
           >
             <Text
               style={[
                 styles.categoryText,
-                selectedCategory === category && styles.selectedCategoryText
+                selectedCategory === category && styles.selectedCategoryText,
               ]}
             >
               {category}
@@ -69,10 +90,10 @@ const products = () => {
         ))}
       </ScrollView>
 
-      {/* Product Grid with alternating card sizes */}
+      {/* Product Grid */}
       <FlatList
         data={filterProducts()}
-        numColumns={2} // Keep two items per row
+        numColumns={2}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderProductItem}
       />
@@ -104,10 +125,8 @@ const styles = StyleSheet.create({
   selectedCategoryText: {
     color: '#FFF',
   },
-
-  // Card styles for alternating sizes
   bigCard: {
-    width: '40%', // Bigger card takes more space
+    width: '40%',
     backgroundColor: '#FFF',
     borderRadius: 10,
     margin: 10,
@@ -118,7 +137,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   smallCard: {
-    width: '40%', // Smaller card takes less space
+    width: '40%',
     backgroundColor: '#FFF',
     borderRadius: 10,
     margin: 10,
@@ -127,7 +146,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
     elevation: 3,
-  }
+  },
 });
 
 export default products;

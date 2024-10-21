@@ -1,5 +1,6 @@
 import { View, Text, Image } from 'react-native'
 import React from 'react'
+import { Link } from 'expo-router'
 
 interface DataProp{
     item:{
@@ -15,6 +16,7 @@ interface DataProp{
 
 const ProductItems = ({item}: DataProp) => {
   return (
+    <Link href={ { pathname:`/list/${item.price}`, params:{ item: JSON.stringify(item) }} }>
     <View style={{width:'90%', alignSelf:'center', backgroundColor:'white', marginTop:20, flexDirection:'row'}}>
       <Image source={{uri:item.image}} style={{width:60, height:60}} />
       <View style={{marginLeft:10 , padding:10 , overflow:'hidden'}}>
@@ -23,6 +25,7 @@ const ProductItems = ({item}: DataProp) => {
 
       </View>
     </View>
+    </Link>
   )
 }
 

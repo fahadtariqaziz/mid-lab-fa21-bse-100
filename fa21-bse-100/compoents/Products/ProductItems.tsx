@@ -1,32 +1,86 @@
-import { View, Text, Image } from 'react-native'
-import React from 'react'
-import { Link } from 'expo-router'
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import React from 'react';
 
-interface DataProp{
-    item:{
-        category : string,
-    description : string,
-    id : number,
-    image : string,
-    price : number,
-    rating : any,
-    title : string
-    }
+interface DataProp {
+  item: {
+    category: string;
+    id: number;
+    inStock: boolean;
+    name: string;
+  };
 }
 
-const ProductItems = ({item}: DataProp) => {
+const ProductItems = ({ item }: DataProp) => {
   return (
-    <Link href={ { pathname:`/list/${item.price}`, params:{ item: JSON.stringify(item) }} }>
-    <View style={{width:'90%', alignSelf:'center', backgroundColor:'white', marginTop:20, flexDirection:'row'}}>
-      <Image source={{uri:item.image}} style={{width:60, height:60}} />
-      <View style={{marginLeft:10 , padding:10 , overflow:'hidden'}}>
-        <Text style={{fontWeight:'500', width:'60%'}}>{item.title.length>50? item.description.substring(0,50)+ "..." : item.title}</Text>
-        <Text style={{fontSize:12, marginTop:10, width:'60%'}}>{item.description.length>50? item.description.substring(0,50)+ "..." : item.description}</Text>
-
-      </View>
+    <View style={styles.card}>
+      <Image
+        source={{ uri: 'https://www.shutterstock.com/shutterstock/photos/2476606071/display_1500/stock-photo-variety-of-fruits-and-berries-on-a-wooden-table-the-table-fills-most-of-the-frame-and-the-fruits-2476606071.jpg' }}
+        style={styles.image}
+      />
+      <Text style={styles.productName}>
+        {item.name.length > 50 ? item.name.substring(0, 50) + "..." : item.name}
+      </Text>
+      <Text style={styles.category}>from {item.category}</Text>
+      <Text style={styles.price}>$1.20 per piece</Text>
+      <TouchableOpacity style={styles.addButton}>
+        <Text style={styles.addButtonText}>+</Text>
+      </TouchableOpacity>
     </View>
-    </Link>
-  )
-}
+  );
+};
 
-export default ProductItems
+const styles = StyleSheet.create({
+  card: {
+    width: '45%',
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 10,
+    margin: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+  },
+  productName: {
+    fontWeight: '500',
+    fontSize: 14,
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  category: {
+    fontSize: 12,
+    color: 'gray',
+    marginTop: 5,
+    textAlign: 'center',
+  },
+  price: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 5,
+    textAlign: 'center',
+  },
+  addButton: {
+    marginTop: 10,
+    backgroundColor: '#00C853',
+    padding: 5,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 30,
+    height: 30,
+  },
+  addButtonText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+});
+
+export default ProductItems;

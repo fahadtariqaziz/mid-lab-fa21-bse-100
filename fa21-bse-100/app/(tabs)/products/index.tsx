@@ -37,7 +37,7 @@ const products = () => {
         getProducts();
       }
     } catch (error) {
-      console.error('Failed to load products from async storage: ', error);
+        console.error('Failed to load products from storage: change in main', error);
     }
   };
 
